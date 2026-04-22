@@ -34,6 +34,7 @@ import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
+import untitled_epy_block_0 as epy_block_0  # embedded python block
 import untitled_epy_block_1 as epy_block_1  # embedded python block
 
 
@@ -229,6 +230,7 @@ class untitled(gr.top_block, Qt.QWidget):
         self._qtgui_time_sink_x_0_0_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0_0_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_0_0_win)
         self.epy_block_1 = epy_block_1.blk(port='/dev/ttyUSB0', baudrate=921600)
+        self.epy_block_0 = epy_block_0.ota_frame_generator(Interface_KEY=123456)
         self.digital_gfsk_mod_0 = digital.gfsk_mod(
             samples_per_symbol=52,
             sensitivity=2.83227,
@@ -259,8 +261,8 @@ class untitled(gr.top_block, Qt.QWidget):
         self.connect((self.digital_gfsk_demod_0, 0), (self.blocks_uchar_to_float_0_0, 0))
         self.connect((self.digital_gfsk_mod_0, 0), (self.digital_gfsk_demod_0, 0))
         self.connect((self.digital_gfsk_mod_0, 0), (self.qtgui_time_sink_x_0_0_1, 0))
+        self.connect((self.epy_block_0, 0), (self.blocks_uchar_to_float_1, 0))
         self.connect((self.epy_block_1, 0), (self.blocks_stream_to_tagged_stream_0, 0))
-        self.connect((self.epy_block_1, 0), (self.blocks_uchar_to_float_1, 0))
 
 
     def closeEvent(self, event):

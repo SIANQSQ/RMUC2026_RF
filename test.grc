@@ -239,7 +239,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [824, 412.0]
+    coordinate: [784, 428.0]
     rotation: 0
     state: true
 - name: digital_gfsk_mod_0
@@ -261,6 +261,72 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [496, 420.0]
+    rotation: 0
+    state: true
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    Interface_KEY: '123456'
+    _source_code: "import numpy as np\nfrom gnuradio import gr\nimport os\n\nclass\
+      \ ota_frame_generator(gr.sync_block):\n    \"\"\"\n    \u81EA\u5B9A\u4E49\u7A7A\
+      \u53E3\u5E27\u751F\u6210\u5757\n    \u751F\u6210\u56FA\u5B9A\u7ED3\u6784\uFF1A\
+      [8\u5B57\u8282Access Code][4\u5B57\u8282\u53CC\u4EFDHeader][15\u5B57\u8282Payload]\n\
+      \    \"\"\"\n    def __init__(self, Interface_KEY = \"123456\"):\n        self.log(\"\
+      Start Here\")\n        \"\"\"\n        \u53C2\u6570:\n            access_code_choice:\
+      \ \u9009\u62E9Access Code\u7C7B\u578B\uFF0C\"\u4FE1\u606F\u6CE2\"\u6216\"\u5E72\
+      \u6270\u6CE2\"\n            payload_data: 15\u5B57\u8282\u7684Payload\u6570\u636E\
+      \uFF08bytes\u7C7B\u578B\uFF09\uFF0C\u9ED8\u8BA4\u51680x00\n        \"\"\"\n\
+      \        gr.sync_block.__init__(\n            self,\n            name=\"Interference\
+      \ wave Generator\",  \n            in_sig=None,  \n            out_sig=[np.uint8]\
+      \  \n        )\n\n        # Access Code\n        # \u5E72\u6270\u6CE2 Access\
+      \ Code: 0x16E8D377151C712D\uFF08\u5927\u7AEF\u5E8F\uFF09\n        self.access_code_jam\
+      \ = bytes([\n            0x16, 0xE8, 0xD3, 0x77,\n            0x15, 0x1C, 0x71,\
+      \ 0x2D\n        ])\n\n        # Header \n        # \u56FA\u5B9A 0x00 0x0F 0x00\
+      \ 0x0F\n        self.header = bytes([0x00, 0x0F, 0x00, 0x0F])\n\n        # #\
+      \ Payload\n        # if payload_data is None:\n        #     # \u9ED8\u8BA4\
+      Payload\uFF1A15\u5B57\u8282\u51680x00\uFF08\u5E72\u6270\u6570\u636E\uFF09\n\
+      \        #     self.payload = bytes([0x00] * 15)\n        # else:\n        #\
+      \     # \u786E\u4FDDPayload\u662F15\u5B57\u8282\n        #     if len(payload_data)\
+      \ != 15:\n        #         raise ValueError(\"Payload\u5FC5\u987B\u662F15\u5B57\
+      \u8282\uFF01\")\n        #     self.payload = payload_data\n\n        # --------------------------\
+      \ 4. \u7EC4\u88C5\u5B8C\u6574\u5E27 --------------------------\n        # self.frame\
+      \ = self.access_code + self.header + self.payload\n        # self.frame_len\
+      \ = len(self.frame)  # \u56FA\u5B9A27\u5B57\u8282\n\n        # # \u7528\u4E8E\
+      \u5FAA\u73AF\u8F93\u51FA\u7684\u7D22\u5F15\n        # self.current_idx = 0\n\
+      \n    def generate_9byte_random_data(self):\n        random_fill = os.urandom(9)\n\
+      \        return random_fill\n    \n    def log(self,str):\n        print(\"\
+      [Python Block Debug]:\"+str)\n        \n    def work(self, input_items, output_items):\n\
+      \        out = output_items[0]\n        out_len = len(out)\n\n        # \u5FAA\
+      \u73AF\u5C06\u5E27\u6570\u636E\u586B\u5145\u5230\u8F93\u51FA\u7F13\u51B2\u533A\
+      \n        bytes_written = 0\n        print(self.generate_9byte_random_data)\n\
+      \        # while bytes_written < out_len:\n        #     # \u8BA1\u7B97\u672C\
+      \u6B21\u53EF\u5199\u5165\u7684\u5B57\u8282\u6570\n        #     remaining_in_frame\
+      \ = self.frame_len - self.current_idx\n        #     remaining_in_out = out_len\
+      \ - bytes_written\n        #     write_len = min(remaining_in_frame, remaining_in_out)\n\
+      \n        #     # \u590D\u5236\u6570\u636E\u5230\u8F93\u51FA\n        #    \
+      \ out[bytes_written:bytes_written+write_len] = np.frombuffer(\n        #   \
+      \      self.frame[self.current_idx:self.current_idx+write_len],\n        # \
+      \        dtype=np.uint8\n        #     )\n\n        #     # \u66F4\u65B0\u7D22\
+      \u5F15\n        #     self.current_idx += write_len\n        #     bytes_written\
+      \ += write_len\n\n        #     # \u5982\u679C\u4E00\u5E27\u5199\u5B8C\uFF0C\
+      \u91CD\u7F6E\u7D22\u5F15\uFF0C\u5FAA\u73AF\u53D1\u9001\n        #     if self.current_idx\
+      \ >= self.frame_len:\n        #         self.current_idx = 0\n\n        # return\
+      \ bytes_written\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: "('Interference wave Generator', 'ota_frame_generator', [('Interface_KEY',\
+      \ \"'123456'\")], [], [('0', 'byte', 1)], '\\n    \u81EA\u5B9A\u4E49\u7A7A\u53E3\
+      \u5E27\u751F\u6210\u5757\\n    \u751F\u6210\u56FA\u5B9A\u7ED3\u6784\uFF1A[8\u5B57\
+      \u8282Access Code][4\u5B57\u8282\u53CC\u4EFDHeader][15\u5B57\u8282Payload]\\\
+      n    ', [])"
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [104, 912.0]
     rotation: 0
     state: true
 - name: epy_block_1
@@ -288,7 +354,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [32, 812.0]
+    coordinate: [16, 644.0]
     rotation: 0
     state: true
 - name: iio_pluto_sink_0
@@ -830,7 +896,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [384, 692.0]
+    coordinate: [424, 844.0]
     rotation: 0
     state: true
 
@@ -850,8 +916,8 @@ connections:
 - [digital_gfsk_mod_0, '0', digital_gfsk_demod_0, '0']
 - [digital_gfsk_mod_0, '0', iio_pluto_sink_0, '0']
 - [digital_gfsk_mod_0, '0', qtgui_time_sink_x_0_0_1, '0']
+- [epy_block_0, '0', blocks_uchar_to_float_1, '0']
 - [epy_block_1, '0', blocks_stream_to_tagged_stream_0, '0']
-- [epy_block_1, '0', blocks_uchar_to_float_1, '0']
 - [iio_pluto_source_0, '0', digital_gfsk_demod_0, '0']
 - [iio_pluto_source_0, '0', qtgui_time_sink_x_0_0_1_0, '0']
 
