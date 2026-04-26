@@ -53,9 +53,13 @@ def generate_ascii_bytes(length: int) -> bytes:
     chars = string.printable[:95]
     return ''.join(random.choices(chars, k=length)).encode('ascii')
 
+def generate_key() -> bytes:
+    key = "123456"
+    return key
+
 def build_structured_frame(seq: int) -> bytes:
     # 数据区（保证6字节，不足补随机）
-    data = generate_ascii_bytes(6)
+    data = "123456".encode('ascii')
 
     # 帧头前4字节：SOF + datalength + seq
     datalength_bytes = bytes([(DATALENGTH >> 8) & 0xFF, DATALENGTH & 0xFF])
@@ -79,15 +83,14 @@ def format_hex(data: bytes) -> str:
 # ---------- 主循环 ----------
 def main():
     # 计算帧长和填充量
-    structured_len = 5 + len(CMD_ID) + DATALENGTH + 2  # 15
-    frame_len = len(ACCESS_CODE) + len(LENGTH_CHECK) + structured_len
-    pad_len = BYTES_PER_CYCLE - frame_len
-    if pad_len < 0:
-        raise ValueError(f"帧过长! frame_len={frame_len} > 每周期字节数{BYTES_PER_CYCLE}")
+    data_frame_len = 5 + len(CMD_ID) + DATALENGTH + 2                          # 5 + 2 + 6 + 2 = 15
+    air_frame_len = len(ACCESS_CODE) + len(LENGTH_CHECK) + data_frame_len      # 8 + 4 + 15 = 27
+    pad_len = BYTES_PER_CYCLE - air_frame_len
+    print(pad_len)
 
     seq = 0
     print(f"ACCESS_CODE: {ACCESS_CODE.hex().upper()}", file=sys.stderr)
-    print(f"帧长: {frame_len} B, 填充: {pad_len} B, 周期: {CYCLE_TIME} s", file=sys.stderr)
+    print(f"帧长: {air_frame_len} B, 填充: {pad_len} B, 周期: {CYCLE_TIME} s", file=sys.stderr)
 
     try:
         while True:

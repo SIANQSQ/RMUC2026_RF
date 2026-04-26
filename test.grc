@@ -28,7 +28,7 @@ options:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 8]
+    coordinate: [8, 12.0]
     rotation: 0
     state: enabled
 
@@ -138,7 +138,7 @@ blocks:
     bus_structure: null
     coordinate: [256, 444.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_uchar_to_float_0
   id: blocks_uchar_to_float
   parameters:
@@ -168,7 +168,7 @@ blocks:
     bus_structure: null
     coordinate: [1280, 328.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: blocks_uchar_to_float_0_1
   id: blocks_uchar_to_float
   parameters:
@@ -196,7 +196,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [224, 824.0]
+    coordinate: [376, 904.0]
     rotation: 0
     state: true
 - name: blocks_vector_source_x_0
@@ -241,7 +241,7 @@ blocks:
     bus_structure: null
     coordinate: [784, 428.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: digital_gfsk_mod_0
   id: digital_gfsk_mod
   parameters:
@@ -262,71 +262,66 @@ blocks:
     bus_structure: null
     coordinate: [496, 420.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: epy_block_0
   id: epy_block
   parameters:
-    Interface_KEY: '123456'
-    _source_code: "import numpy as np\nfrom gnuradio import gr\nimport os\n\nclass\
-      \ ota_frame_generator(gr.sync_block):\n    \"\"\"\n    \u81EA\u5B9A\u4E49\u7A7A\
-      \u53E3\u5E27\u751F\u6210\u5757\n    \u751F\u6210\u56FA\u5B9A\u7ED3\u6784\uFF1A\
-      [8\u5B57\u8282Access Code][4\u5B57\u8282\u53CC\u4EFDHeader][15\u5B57\u8282Payload]\n\
-      \    \"\"\"\n    def __init__(self, Interface_KEY = \"123456\"):\n        self.log(\"\
-      Start Here\")\n        \"\"\"\n        \u53C2\u6570:\n            access_code_choice:\
-      \ \u9009\u62E9Access Code\u7C7B\u578B\uFF0C\"\u4FE1\u606F\u6CE2\"\u6216\"\u5E72\
-      \u6270\u6CE2\"\n            payload_data: 15\u5B57\u8282\u7684Payload\u6570\u636E\
-      \uFF08bytes\u7C7B\u578B\uFF09\uFF0C\u9ED8\u8BA4\u51680x00\n        \"\"\"\n\
-      \        gr.sync_block.__init__(\n            self,\n            name=\"Interference\
-      \ wave Generator\",  \n            in_sig=None,  \n            out_sig=[np.uint8]\
-      \  \n        )\n\n        # Access Code\n        # \u5E72\u6270\u6CE2 Access\
-      \ Code: 0x16E8D377151C712D\uFF08\u5927\u7AEF\u5E8F\uFF09\n        self.access_code_jam\
-      \ = bytes([\n            0x16, 0xE8, 0xD3, 0x77,\n            0x15, 0x1C, 0x71,\
-      \ 0x2D\n        ])\n\n        # Header \n        # \u56FA\u5B9A 0x00 0x0F 0x00\
-      \ 0x0F\n        self.header = bytes([0x00, 0x0F, 0x00, 0x0F])\n\n        # #\
-      \ Payload\n        # if payload_data is None:\n        #     # \u9ED8\u8BA4\
-      Payload\uFF1A15\u5B57\u8282\u51680x00\uFF08\u5E72\u6270\u6570\u636E\uFF09\n\
-      \        #     self.payload = bytes([0x00] * 15)\n        # else:\n        #\
-      \     # \u786E\u4FDDPayload\u662F15\u5B57\u8282\n        #     if len(payload_data)\
-      \ != 15:\n        #         raise ValueError(\"Payload\u5FC5\u987B\u662F15\u5B57\
-      \u8282\uFF01\")\n        #     self.payload = payload_data\n\n        # --------------------------\
-      \ 4. \u7EC4\u88C5\u5B8C\u6574\u5E27 --------------------------\n        # self.frame\
-      \ = self.access_code + self.header + self.payload\n        # self.frame_len\
-      \ = len(self.frame)  # \u56FA\u5B9A27\u5B57\u8282\n\n        # # \u7528\u4E8E\
-      \u5FAA\u73AF\u8F93\u51FA\u7684\u7D22\u5F15\n        # self.current_idx = 0\n\
-      \n    def generate_9byte_random_data(self):\n        random_fill = os.urandom(9)\n\
-      \        return random_fill\n    \n    def log(self,str):\n        print(\"\
-      [Python Block Debug]:\"+str)\n        \n    def work(self, input_items, output_items):\n\
-      \        out = output_items[0]\n        out_len = len(out)\n\n        # \u5FAA\
-      \u73AF\u5C06\u5E27\u6570\u636E\u586B\u5145\u5230\u8F93\u51FA\u7F13\u51B2\u533A\
-      \n        bytes_written = 0\n        print(self.generate_9byte_random_data)\n\
-      \        # while bytes_written < out_len:\n        #     # \u8BA1\u7B97\u672C\
-      \u6B21\u53EF\u5199\u5165\u7684\u5B57\u8282\u6570\n        #     remaining_in_frame\
-      \ = self.frame_len - self.current_idx\n        #     remaining_in_out = out_len\
-      \ - bytes_written\n        #     write_len = min(remaining_in_frame, remaining_in_out)\n\
-      \n        #     # \u590D\u5236\u6570\u636E\u5230\u8F93\u51FA\n        #    \
-      \ out[bytes_written:bytes_written+write_len] = np.frombuffer(\n        #   \
-      \      self.frame[self.current_idx:self.current_idx+write_len],\n        # \
-      \        dtype=np.uint8\n        #     )\n\n        #     # \u66F4\u65B0\u7D22\
-      \u5F15\n        #     self.current_idx += write_len\n        #     bytes_written\
-      \ += write_len\n\n        #     # \u5982\u679C\u4E00\u5E27\u5199\u5B8C\uFF0C\
-      \u91CD\u7F6E\u7D22\u5F15\uFF0C\u5FAA\u73AF\u53D1\u9001\n        #     if self.current_idx\
-      \ >= self.frame_len:\n        #         self.current_idx = 0\n\n        # return\
-      \ bytes_written\n"
+    _source_code: "#!/usr/bin/env python3\nimport numpy as np\nfrom gnuradio import\
+      \ gr\nimport random\nimport string\n\nclass gfsk_data_source(gr.sync_block):\n\
+      \    \"\"\"\n    \u751F\u6210\u7A7A\u53E3\u5E27\u7ED3\u6784\u7684\u5B57\u8282\
+      \u6D41\uFF0C\u4F9BGFSK\u8C03\u5236\u5757\u4F7F\u7528\n    \"\"\"\n    def __init__(self):\n\
+      \        gr.sync_block.__init__(self, name=\"Interfere Wave Source\", in_sig=None,\
+      \ out_sig=[np.uint8])\n        # \u5E27\u7ED3\u6784\u53C2\u6570\n        self.ACCESS_CODE\
+      \ = bytes([0x16, 0xE8, 0xD3, 0x77, 0x15, 0x1C, 0x71, 0x2D])\n        self.LENGTH_CHECK\
+      \ = bytes([0x00, 0x0F, 0x00, 0x0F])\n        self.SOF = 0xA5\n        self.CMD_ID\
+      \ = bytes([0x0A, 0x06])\n        self.DATALENGTH = 6\n        self.TARGET_BYTES_PER_SEC\
+      \ = 1350\n        self.PACKET_FREQ_HZ = 10\n        self.CYCLE_TIME = 1.0 /\
+      \ self.PACKET_FREQ_HZ\n        self.BYTES_PER_CYCLE = self.TARGET_BYTES_PER_SEC\
+      \ // self.PACKET_FREQ_HZ\n        self.data_frame_len = 5 + len(self.CMD_ID)\
+      \ + self.DATALENGTH + 2\n        self.air_frame_len = len(self.ACCESS_CODE)\
+      \ + len(self.LENGTH_CHECK) + self.data_frame_len\n        self.pad_len = self.BYTES_PER_CYCLE\
+      \ - self.air_frame_len\n        self.seq = 0\n    def crc8_atm(self, data: bytes)\
+      \ -> int:\n        poly = 0x07\n        crc = 0x00\n        for byte in data:\n\
+      \            crc ^= byte\n            for _ in range(8):\n                if\
+      \ crc & 0x80:\n                    crc = ((crc << 1) ^ poly) & 0xFF\n      \
+      \          else:\n                    crc = (crc << 1) & 0xFF\n        return\
+      \ crc\n\n    def crc16_ccitt(self, data: bytes) -> int:\n        poly = 0x1021\n\
+      \        crc = 0xFFFF\n        for byte in data:\n            crc ^= (byte <<\
+      \ 8)\n            for _ in range(8):\n                if crc & 0x8000:\n   \
+      \                 crc = ((crc << 1) ^ poly) & 0xFFFF\n                else:\n\
+      \                    crc = (crc << 1) & 0xFFFF\n        return crc\n\n    def\
+      \ generate_ascii_bytes(self, length: int) -> bytes:\n        chars = string.printable[:95]\n\
+      \        return ''.join(random.choices(chars, k=length)).encode('ascii')\n\n\
+      \    def build_structured_frame(self, seq: int) -> bytes:\n        data = b\"\
+      123456\"\n        datalength_bytes = bytes([(self.DATALENGTH >> 8) & 0xFF, self.DATALENGTH\
+      \ & 0xFF])\n        header_prefix = bytes([self.SOF]) + datalength_bytes + bytes([seq])\n\
+      \        crc8 = self.crc8_atm(header_prefix)\n        frame_header = header_prefix\
+      \ + bytes([crc8])\n        crc_input = frame_header + self.CMD_ID + data\n \
+      \       crc16_val = self.crc16_ccitt(crc_input)\n        crc16_bytes = bytes([(crc16_val\
+      \ >> 8) & 0xFF, crc16_val & 0xFF])\n        return crc_input + crc16_bytes\n\
+      \n    def next_packet(self):\n        structured = self.build_structured_frame(self.seq)\n\
+      \        packet = self.ACCESS_CODE + self.LENGTH_CHECK + structured\n      \
+      \  padding = self.generate_ascii_bytes(self.pad_len) if self.pad_len > 0 else\
+      \ b''\n        self.seq = (self.seq + 1) % 256\n        return packet + padding\n\
+      \n    def work(self, input_items, output_items):\n        out = output_items[0]\n\
+      \        noutput_items = len(out)\n        pkt_len = self.air_frame_len + self.pad_len\n\
+      \        bytes_written = 0\n        while bytes_written + pkt_len <= noutput_items:\n\
+      \            pkt = self.next_packet()\n            out[bytes_written:bytes_written+pkt_len]\
+      \ = np.frombuffer(pkt, dtype=np.uint8)\n            bytes_written += pkt_len\n\
+      \        return bytes_written"
     affinity: ''
     alias: ''
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: "('Interference wave Generator', 'ota_frame_generator', [('Interface_KEY',\
-      \ \"'123456'\")], [], [('0', 'byte', 1)], '\\n    \u81EA\u5B9A\u4E49\u7A7A\u53E3\
-      \u5E27\u751F\u6210\u5757\\n    \u751F\u6210\u56FA\u5B9A\u7ED3\u6784\uFF1A[8\u5B57\
-      \u8282Access Code][4\u5B57\u8282\u53CC\u4EFDHeader][15\u5B57\u8282Payload]\\\
-      n    ', [])"
+    _io_cache: "('Interfere Wave Source', 'gfsk_data_source', [], [], [('0', 'byte',\
+      \ 1)], '\\n    \u751F\u6210\u7A7A\u53E3\u5E27\u7ED3\u6784\u7684\u5B57\u8282\u6D41\
+      \uFF0C\u4F9BGFSK\u8C03\u5236\u5757\u4F7F\u7528\\n    ', [])"
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [104, 912.0]
+    coordinate: [120, 904.0]
     rotation: 0
     state: true
 - name: epy_block_1
@@ -354,9 +349,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 644.0]
+    coordinate: [192, 564.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: iio_pluto_sink_0
   id: iio_pluto_sink
   parameters:
@@ -607,7 +602,7 @@ blocks:
     bus_structure: null
     coordinate: [1464, 300.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: qtgui_time_sink_x_0_0_1
   id: qtgui_time_sink_x
   parameters:
@@ -704,7 +699,7 @@ blocks:
     bus_structure: null
     coordinate: [776, 284.0]
     rotation: 0
-    state: true
+    state: disabled
 - name: qtgui_time_sink_x_0_0_1_0
   id: qtgui_time_sink_x
   parameters:
@@ -896,7 +891,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [424, 844.0]
+    coordinate: [584, 924.0]
     rotation: 0
     state: true
 

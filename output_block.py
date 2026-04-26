@@ -9,7 +9,7 @@ class gfsk_data_source(gr.sync_block):
     生成空口帧结构的字节流，供GFSK调制块使用
     """
     def __init__(self):
-        gr.sync_block.__init__(self, name="Interfere Wave Source", in_sig=None, out_sig=[np.uint8])
+        gr.sync_block.__init__(self, name="GFSK Data Source", in_sig=None, out_sig=[np.uint8])
         # 帧结构参数
         self.ACCESS_CODE = bytes([0x16, 0xE8, 0xD3, 0x77, 0x15, 0x1C, 0x71, 0x2D])
         self.LENGTH_CHECK = bytes([0x00, 0x0F, 0x00, 0x0F])
