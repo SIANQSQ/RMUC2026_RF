@@ -1,0 +1,1034 @@
+options:
+  parameters:
+    author: qsq
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: Info_Wave_Generator
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Information Wave Generator
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 12.0]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '1000000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '0.3'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [752, 500.0]
+    rotation: 0
+    state: true
+- name: blocks_throttle_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: '432000'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 276.0]
+    rotation: 0
+    state: disabled
+- name: blocks_uchar_to_float_1
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [280, 248.0]
+    rotation: 0
+    state: disabled
+- name: blocks_uchar_to_float_1_0
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1928, 344.0]
+    rotation: 0
+    state: enabled
+- name: blocks_unpack_k_bits_bb_0
+  id: blocks_unpack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '8'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [328, 372.0]
+    rotation: 0
+    state: true
+- name: digital_gfsk_demod_0_0
+  id: digital_gfsk_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq_error: '0.0'
+    gain_mu: '0.05'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mu: '0.5'
+    omega_relative_limit: '0.02'
+    samples_per_symbol: '52'
+    sensitivity: '2.8323'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1392, 300.0]
+    rotation: 0
+    state: enabled
+- name: digital_gfsk_mod_0_0
+  id: digital_gfsk_mod
+  parameters:
+    affinity: ''
+    alias: ''
+    bt: '0.35'
+    comment: ''
+    do_unpack: 'False'
+    log: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_symbol: '52'
+    sensitivity: '2.8323'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [544, 340.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "#!/usr/bin/env python3\nimport numpy as np\nfrom gnuradio import\
+      \ gr\nimport random\nimport string\n\n\n# \u5E72\u6270\u6CE2\u6570\u636E\u751F\
+      \u6210\u5757 (\u5BC6\u94A5+\u968F\u673A\u586B\u5145)\nclass gfsk_data_source(gr.sync_block):\n\
+      \    def __init__(self):\n        gr.sync_block.__init__(self, name=\"GFSK Data\
+      \ Source\", in_sig=None, out_sig=[np.uint8])\n        \n        # \u5E27\u7ED3\
+      \u6784\u53C2\u6570\n        self.ACCESS_CODE = bytes([0x16, 0xE8, 0xD3, 0x77,\
+      \ 0x15, 0x1C, 0x71, 0x2D])\n        self.LENGTH_CHECK = bytes([0x00, 0x0F, 0x00,\
+      \ 0x0F])\n        self.SOF = 0xA5\n        self.CMD_ID = bytes([0x0A, 0x06])\n\
+      \        self.DATALENGTH = 6\n        self.TARGET_BYTES_PER_SEC = 1350     \
+      \                                                                 # \u5E72\u6270\
+      \u8F93\u51FA:1350 Bytes/s\n        self.PACKET_FREQ_HZ = 10                \
+      \                                                              # \u6570\u636E\
+      \u5305\u4F53\u63A8\u9001\u901F\u7387: 10Hz\n        self.CYCLE_TIME = 1.0 /\
+      \ self.PACKET_FREQ_HZ\n        self.BYTES_PER_CYCLE = self.TARGET_BYTES_PER_SEC\
+      \ // self.PACKET_FREQ_HZ\n        \n        # \u8BA1\u7B97\u5E27\u957F\u5EA6\
+      \n        self.data_frame_len = 5 + len(self.CMD_ID) + self.DATALENGTH + 2 \
+      \                                     # \u6570\u636E\u5E27 5 + 6 + 2 + 2 = 15\n\
+      \        self.air_frame_len = len(self.ACCESS_CODE) + len(self.LENGTH_CHECK)\
+      \ + self.data_frame_len             # \u7A7A\u53E3\u5E27 8 + 4 + 15 = 27\n \
+      \       self.pad_len = self.BYTES_PER_CYCLE - self.air_frame_len           \
+      \                                   # \u586B\u5145\u957F\u5EA6 135 - 27 = 108\n\
+      \        self.seq = 0                                                      \
+      \                                    # \u5305\u5E8F\u53F7 0-255\u5FAA\u73AF\n\
+      \n        self._packet_buffer = bytearray()\n        print(f\"Packet length\
+      \ (bytes): {self.air_frame_len + self.pad_len}\")\n\n    def crc8_atm(self,\
+      \ data: bytes) -> int:\n        poly = 0x07\n        crc = 0x00\n        for\
+      \ byte in data:\n            crc ^= byte\n            for _ in range(8):\n \
+      \               if crc & 0x80:\n                    crc = ((crc << 1) ^ poly)\
+      \ & 0xFF\n                else:\n                    crc = (crc << 1) & 0xFF\n\
+      \        return crc\n\n    def crc16_ccitt(self, data: bytes) -> int:\n    \
+      \    poly = 0x1021\n        crc = 0xFFFF\n        for byte in data:\n      \
+      \      crc ^= (byte << 8)\n            for _ in range(8):\n                if\
+      \ crc & 0x8000:\n                    crc = ((crc << 1) ^ poly) & 0xFFFF\n  \
+      \              else:\n                    crc = (crc << 1) & 0xFFFF\n      \
+      \  return crc\n\n    def generate_ascii_bytes(self, length: int) -> bytes:\n\
+      \        chars = string.printable[:95]\n        return ''.join(random.choices(chars,\
+      \ k=length)).encode('ascii')\n\n    def build_structured_frame(self, seq: int)\
+      \ -> bytes:\n        data = b\"rmnb66\"\n        datalength_bytes = bytes([(self.DATALENGTH\
+      \ >> 8) & 0xFF, self.DATALENGTH & 0xFF])\n        header_prefix = bytes([self.SOF])\
+      \ + datalength_bytes + bytes([seq])\n        crc8 = self.crc8_atm(header_prefix)\n\
+      \        frame_header = header_prefix + bytes([crc8])\n        crc_input = frame_header\
+      \ + self.CMD_ID + data\n        crc16_val = self.crc16_ccitt(crc_input)\n  \
+      \      crc16_bytes = bytes([(crc16_val >> 8) & 0xFF, crc16_val & 0xFF])\n  \
+      \      return crc_input + crc16_bytes\n\n    def next_packet(self):  #\u751F\
+      \u6210\u5B8C\u6574\u6570\u636E\u5305\n        structured = self.build_structured_frame(self.seq)\n\
+      \        packet = self.ACCESS_CODE + self.LENGTH_CHECK + structured\n      \
+      \  padding = self.generate_ascii_bytes(self.pad_len) if self.pad_len > 0 else\
+      \ b''\n        self.seq = (self.seq + 1) % 256\n        return packet + padding\n\
+      \n    def work(self, input_items, output_items):\n        out = output_items[0]\n\
+      \        max_output = len(out)\n        bytes_written = 0\n\n        # \u7F13\
+      \u5B58\u4E3A\u7A7A\u65F6\uFF0C\u751F\u6210\u65B0\u6570\u636E\u5305\n       \
+      \ if len(self._packet_buffer) == 0:\n            self._packet_buffer = bytearray(self.next_packet())\n\
+      \n        send_len = min(len(self._packet_buffer), max_output)\n        if send_len\
+      \ > 0:\n            # \u590D\u5236\u7F13\u5B58\u6570\u636E\u5230\u8F93\u51FA\
+      \n            out[:send_len] = np.frombuffer(self._packet_buffer[:send_len],\
+      \ dtype=np.uint8)\n            # \u79FB\u9664\u5DF2\u53D1\u9001\u7684\u6570\u636E\
+      \n            del self._packet_buffer[:send_len]\n            bytes_written\
+      \ = send_len\n\n        return bytes_written\n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('GFSK Data Source', 'gfsk_data_source', [], [], [('0', 'byte', 1)],
+      '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 304.0]
+    rotation: 0
+    state: true
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "#!/usr/bin/env python3\nimport numpy as np\nfrom gnuradio import\
+      \ gr\nimport pmt\n\n\nclass gfsk_key_decoder(gr.basic_block):\n    \"\"\"\n\
+      \    \u8F93\u5165\uFF1A\n        GFSK Demod \u8F93\u51FA\u7684 unpacked bit\
+      \ stream\uFF0C\u6BCF\u4E2A uint8 \u53EA\u4F7F\u7528 LSB\uFF0C\u503C\u4E3A 0\
+      \ \u6216 1\u3002\n\n    \u7A7A\u53E3\u5E27\u683C\u5F0F\u56FA\u5B9A\u4E3A 27\
+      \ \u5B57\u8282\uFF1A\n\n        ACCESS_CODE      8 bytes\n        LENGTH_CHECK\
+      \     4 bytes\uFF0C\u56FA\u5B9A 00 0F 00 0F\n        DATA_SLICE       15 bytes\n\
+      \n    \u6BCF\u4E2A\u7A7A\u53E3\u5E27\u53EA\u6709\u6700\u540E 15 \u5B57\u8282\
+      \u662F\u6709\u6548\u6570\u636E\u5207\u7247\u3002\n\n    \u4E00\u6574\u5957\u6709\
+      \u6548\u6570\u636E\u4E3A 135 \u5B57\u8282\uFF1A\n\n        135 / 15 = 9\n\n\
+      \    \u6240\u4EE5\u63A5\u6536\u7AEF\u9700\u8981\u8FDE\u7EED\u63A5\u6536 9 \u4E2A\
+      \u7A7A\u53E3\u5E27\uFF0C\u63D0\u53D6\u5176\u4E2D\u7684 15 \u5B57\u8282 DATA_SLICE\uFF0C\
+      \n    \u62FC\u63A5\u6210 135 \u5B57\u8282\u5B8C\u6574\u6570\u636E\uFF0C\u7136\
+      \u540E\u518D\u89E3\u6790\u5185\u90E8\u7684\u4E94\u4E2A\u5B50\u5305\u3002\n\n\
+      \    135 \u5B57\u8282\u5185\u90E8\u5305\u542B\u4E94\u4E2A\u5B50\u6570\u636E\u5305\
+      \uFF1A\n\n        CMD_ID 0x0A01, DATA \u957F\u5EA6 24\n        CMD_ID 0x0A02,\
+      \ DATA \u957F\u5EA6 12\n        CMD_ID 0x0A03, DATA \u957F\u5EA6 10\n      \
+      \  CMD_ID 0x0A04, DATA \u957F\u5EA6 8\n        CMD_ID 0x0A05, DATA \u957F\u5EA6\
+      \ 36\n\n    \u6BCF\u4E2A\u5B50\u6570\u636E\u5305\u683C\u5F0F\uFF1A\n\n     \
+      \   SOF             1 byte\n        DATALENGTH      2 bytes\n        SEQ   \
+      \          1 byte\n        CRC8            1 byte\n        CMD_ID          2\
+      \ bytes\n        DATA            N bytes\n        CRC16           2 bytes\n\n\
+      \    \u8F93\u51FA\uFF1A\n        \u5C06\u4E94\u4E2A\u5B50\u5305\u7684 DATA \u6309\
+      \u987A\u5E8F\u8F93\u51FA\uFF1A\n\n            DATA_0A01 + DATA_0A02 + DATA_0A03\
+      \ + DATA_0A04 + DATA_0A05\n\n        \u603B\u8F93\u51FA\u957F\u5EA6\uFF1A\n\n\
+      \            24 + 12 + 10 + 8 + 36 = 90 bytes\n    \"\"\"\n\n    def __init__(self,\
+      \ max_access_errors=0, debug=True):\n        gr.basic_block.__init__(\n    \
+      \        self,\n            name=\"GFSK 15-Byte Slice Packet Decoder\",\n  \
+      \          in_sig=[np.uint8],\n            out_sig=[np.uint8],\n        )\n\n\
+      \        ##################################################\n        # \u7A7A\
+      \u53E3\u5E27\u53C2\u6570\n        ##################################################\n\
+      \n        self.ACCESS_CODE = bytes([\n            0x16, 0xE8, 0xD3, 0x77,\n\
+      \            0x15, 0x1C, 0x71, 0x2D\n        ])\n\n        # ACCESS_CODE \u540E\
+      \u9762\u7684\u957F\u5EA6\u6821\u9A8C\u56FA\u5B9A\u4E3A 00 0F 00 0F\n       \
+      \ self.SLICE_LEN = 15\n\n        # 8 \u5B57\u8282 ACCESS_CODE + 4 \u5B57\u8282\
+      \ LENGTH_CHECK + 15 \u5B57\u8282 DATA_SLICE\n        self.AIR_FRAME_LEN = 8\
+      \ + 4 + self.SLICE_LEN\n\n        # \u4E00\u6574\u5957\u6570\u636E\u662F 135\
+      \ \u5B57\u8282\uFF0C\u4E5F\u5C31\u662F 9 \u4E2A 15 \u5B57\u8282\u5207\u7247\n\
+      \        self.FULL_PAYLOAD_LEN = 135\n        self.SLICE_COUNT = self.FULL_PAYLOAD_LEN\
+      \ // self.SLICE_LEN\n\n        ##################################################\n\
+      \        # 135 \u5B57\u8282\u5185\u90E8\u5B50\u5305\u53C2\u6570\n        ##################################################\n\
+      \n        self.SOF = 0xA5\n\n        # \u6BCF\u4E2A\u5B50\u5305\u56FA\u5B9A\u5F00\
+      \u9500\uFF1A\n        # SOF 1 + DATALENGTH 2 + SEQ 1 + CRC8 1 + CMD_ID 2 + CRC16\
+      \ 2 = 9\n        self.PACKET_OVERHEAD = 9\n\n        # \u4E94\u4E2A\u5B50\u5305\
+      \uFF0C\u987A\u5E8F\u56FA\u5B9A\n        self.PACKET_SPECS = [\n            (0x0A01,\
+      \ 24),\n            (0x0A02, 12),\n            (0x0A03, 10),\n            (0x0A04,\
+      \ 8),\n            (0x0A05, 36),\n        ]\n\n        # \u4E94\u4E2A\u5B50\u5305\
+      \ DATA \u603B\u957F\u5EA6\n        self.TOTAL_DATA_LEN = sum(data_len for _,\
+      \ data_len in self.PACKET_SPECS)\n\n        calc_payload_len = sum(\n      \
+      \      data_len + self.PACKET_OVERHEAD\n            for _, data_len in self.PACKET_SPECS\n\
+      \        )\n\n        if calc_payload_len != self.FULL_PAYLOAD_LEN:\n      \
+      \      raise ValueError(\n                \"135-byte payload length mismatch:\
+      \ calc=%d expected=%d\"\n                % (calc_payload_len, self.FULL_PAYLOAD_LEN)\n\
+      \            )\n\n        self.max_access_errors = int(max_access_errors)\n\
+      \        self.debug = bool(debug)\n\n        self.access_bits = self.bytes_to_bits(self.ACCESS_CODE)\n\
+      \n        # bit \u7EA7\u7F13\u5B58\uFF0C\u7528\u6765\u5BFB\u627E\u7A7A\u53E3\
+      \u5E27\n        self.bitbuf = bytearray()\n\n        # 15 \u5B57\u8282\u5207\
+      \u7247\u62FC\u63A5\u7F13\u5B58\n        self.slice_buf = bytearray()\n\n   \
+      \     ##################################################\n        # \u8F93\u51FA\
+      \ tag\n        ##################################################\n\n      \
+      \  self.packet_len_key = pmt.intern(\"packet_len\")\n        self.seq_key =\
+      \ pmt.intern(\"seq\")\n        self.cmd_key = pmt.intern(\"cmd_id\")\n     \
+      \   self.frame_index_key = pmt.intern(\"frame_index\")\n\n        # \u5C3D\u91CF\
+      \u8BA9\u8C03\u5EA6\u5668\u4E00\u6B21\u7ED9\u8DB3 90 \u5B57\u8282\u8F93\u51FA\
+      \u7A7A\u95F4\n        try:\n            self.set_min_noutput_items(self.TOTAL_DATA_LEN)\n\
+      \        except Exception:\n            pass\n\n    ##################################################\n\
+      \    # bit/byte \u8F6C\u6362\n    ##################################################\n\
+      \n    def bytes_to_bits(self, data: bytes):\n        \"\"\"\n        MSB first:\n\
+      \            0xA5 -> 1 0 1 0 0 1 0 1\n        \"\"\"\n        bits = []\n  \
+      \      for b in data:\n            for i in range(7, -1, -1):\n            \
+      \    bits.append((b >> i) & 1)\n        return bits\n\n    def bits_to_bytes(self,\
+      \ bits):\n        \"\"\"\n        MSB first bits \u8F6C bytes\u3002\n      \
+      \  \"\"\"\n        n = len(bits) // 8\n        out = bytearray(n)\n\n      \
+      \  for i in range(n):\n            v = 0\n            for b in bits[i * 8:(i\
+      \ + 1) * 8]:\n                v = (v << 1) | (b & 1)\n            out[i] = v\n\
+      \n        return bytes(out)\n\n    ##################################################\n\
+      \    # CRC\n    ##################################################\n\n    def\
+      \ crc8_atm(self, data: bytes) -> int:\n        \"\"\"\n        CRC-8/ATM\n \
+      \       poly = 0x07\n        init = 0x00\n        \"\"\"\n        poly = 0x07\n\
+      \        crc = 0x00\n\n        for byte in data:\n            crc ^= byte\n\
+      \            for _ in range(8):\n                if crc & 0x80:\n          \
+      \          crc = ((crc << 1) ^ poly) & 0xFF\n                else:\n       \
+      \             crc = (crc << 1) & 0xFF\n\n        return crc\n\n    def crc16_ccitt(self,\
+      \ data: bytes) -> int:\n        \"\"\"\n        CRC-16/CCITT-FALSE\n       \
+      \ poly = 0x1021\n        init = 0xFFFF\n        \"\"\"\n        poly = 0x1021\n\
+      \        crc = 0xFFFF\n\n        for byte in data:\n            crc ^= (byte\
+      \ << 8)\n            for _ in range(8):\n                if crc & 0x8000:\n\
+      \                    crc = ((crc << 1) ^ poly) & 0xFFFF\n                else:\n\
+      \                    crc = (crc << 1) & 0xFFFF\n\n        return crc\n\n   \
+      \ ##################################################\n    # ACCESS_CODE \u641C\
+      \u7D22\n    ##################################################\n\n    def find_access_code(self):\n\
+      \        \"\"\"\n        \u5728 bitbuf \u4E2D\u641C\u7D22 ACCESS_CODE\u3002\n\
+      \n        \u8FD4\u56DE\uFF1A\n            \u627E\u5230\uFF1A\u8D77\u59CB bit\
+      \ \u4F4D\u7F6E\n            \u627E\u4E0D\u5230\uFF1A-1\n        \"\"\"\n   \
+      \     n = len(self.access_bits)\n        limit = len(self.bitbuf) - n + 1\n\n\
+      \        if limit <= 0:\n            return -1\n\n        access = self.access_bits\n\
+      \        max_err = self.max_access_errors\n\n        for i in range(limit):\n\
+      \            err = 0\n\n            for j in range(n):\n                if self.bitbuf[i\
+      \ + j] != access[j]:\n                    err += 1\n                    if err\
+      \ > max_err:\n                        break\n\n            if err <= max_err:\n\
+      \                return i\n\n        return -1\n\n    ##################################################\n\
+      \    # \u89E3\u6790 135 \u5B57\u8282\u5185\u90E8\u5B50\u5305\n    ##################################################\n\
+      \n    def parse_one_packet(self, packet: bytes, expected_cmd: int, expected_data_len:\
+      \ int):\n        \"\"\"\n        \u89E3\u6790\u4E00\u4E2A\u5B50\u6570\u636E\u5305\
+      \u3002\n\n        \u5B50\u5305\u683C\u5F0F\uFF1A\n\n            SOF        \
+      \     1 byte\n            DATALENGTH      2 bytes\n            SEQ         \
+      \    1 byte\n            CRC8            1 byte\n            CMD_ID        \
+      \  2 bytes\n            DATA            N bytes\n            CRC16         \
+      \  2 bytes\n        \"\"\"\n\n        expected_packet_len = expected_data_len\
+      \ + self.PACKET_OVERHEAD\n\n        if len(packet) != expected_packet_len:\n\
+      \            return None\n\n        ##################################################\n\
+      \        # SOF\n        ##################################################\n\
+      \n        if packet[0] != self.SOF:\n            return None\n\n        ##################################################\n\
+      \        # DATALENGTH\n        ##################################################\n\
+      \n        data_len = (packet[1] << 8) | packet[2]\n\n        if data_len !=\
+      \ expected_data_len:\n            return None\n\n        ##################################################\n\
+      \        # SEQ\n        ##################################################\n\
+      \n        seq = packet[3]\n\n        ##################################################\n\
+      \        # CRC8\n        #\n        # \u548C\u539F\u59CB\u4EE3\u7801\u4FDD\u6301\
+      \u4E00\u81F4\uFF1A\n        # CRC8 \u8BA1\u7B97\u8303\u56F4\u4E3A SOF + DATALENGTH\
+      \ + SEQ\uFF0C\u4E5F\u5C31\u662F packet[0:4]\n        ##################################################\n\
+      \n        rx_crc8 = packet[4]\n        calc_crc8 = self.crc8_atm(packet[0:4])\n\
+      \n        if rx_crc8 != calc_crc8:\n            return None\n\n        ##################################################\n\
+      \        # CMD_ID\n        ##################################################\n\
+      \n        cmd = (packet[5] << 8) | packet[6]\n\n        if cmd != expected_cmd:\n\
+      \            return None\n\n        ##################################################\n\
+      \        # DATA\n        ##################################################\n\
+      \n        data_start = 7\n        data_end = data_start + data_len\n       \
+      \ data = packet[data_start:data_end]\n\n        ##################################################\n\
+      \        # CRC16\n        #\n        # \u548C\u539F\u59CB\u4EE3\u7801\u4FDD\u6301\
+      \u4E00\u81F4\uFF1A\n        # CRC16 \u8BA1\u7B97\u8303\u56F4\u4E3A\u6574\u4E2A\
+      \u5B50\u5305\u53BB\u6389\u6700\u540E\u4E24\u4E2A CRC16 \u5B57\u8282\n      \
+      \  ##################################################\n\n        rx_crc16 =\
+      \ (packet[-2] << 8) | packet[-1]\n        calc_crc16 = self.crc16_ccitt(packet[:-2])\n\
+      \n        if rx_crc16 != calc_crc16:\n            return None\n\n        return\
+      \ {\n            \"cmd\": cmd,\n            \"seq\": seq,\n            \"data\"\
+      : data,\n        }\n\n    def parse_full_payload(self, payload: bytes):\n  \
+      \      \"\"\"\n        \u89E3\u6790\u62FC\u63A5\u51FA\u6765\u7684 135 \u5B57\
+      \u8282\u5B8C\u6574\u6709\u6548\u6570\u636E\u3002\n\n        135 \u5B57\u8282\
+      \u5185\u90E8\u987A\u5E8F\u56FA\u5B9A\u4E3A\uFF1A\n\n            0x0A01, DATA\
+      \ 24 bytes\n            0x0A02, DATA 12 bytes\n            0x0A03, DATA 10 bytes\n\
+      \            0x0A04, DATA 8 bytes\n            0x0A05, DATA 36 bytes\n     \
+      \   \"\"\"\n\n        if len(payload) != self.FULL_PAYLOAD_LEN:\n          \
+      \  return None\n\n        packets = []\n        offset = 0\n\n        for index,\
+      \ (expected_cmd, expected_data_len) in enumerate(self.PACKET_SPECS):\n     \
+      \       packet_len = expected_data_len + self.PACKET_OVERHEAD\n\n          \
+      \  if offset + packet_len > len(payload):\n                return None\n\n \
+      \           packet = payload[offset:offset + packet_len]\n\n            parsed\
+      \ = self.parse_one_packet(\n                packet,\n                expected_cmd=expected_cmd,\n\
+      \                expected_data_len=expected_data_len,\n            )\n\n   \
+      \         if parsed is None:\n                return None\n\n            parsed[\"\
+      index\"] = index\n            packets.append(parsed)\n\n            offset +=\
+      \ packet_len\n\n        if offset != len(payload):\n            return None\n\
+      \n        return packets\n\n    ##################################################\n\
+      \    # \u8F93\u51FA\u4E94\u4E2A\u5B50\u5305 DATA\n    ##################################################\n\
+      \n    def output_packets(self, packets, out, produced):\n        \"\"\"\n  \
+      \      \u5C06\u4E94\u4E2A\u5B50\u5305\u7684 DATA \u8F93\u51FA\u5230 GNU Radio\
+      \ \u6D41\u4E2D\u3002\n        \"\"\"\n\n        for pkt in packets:\n      \
+      \      cmd = pkt[\"cmd\"]\n            seq = pkt[\"seq\"]\n            data\
+      \ = pkt[\"data\"]\n            index = pkt[\"index\"]\n\n            abs_off\
+      \ = self.nitems_written(0) + produced\n\n            self.add_item_tag(\n  \
+      \              0,\n                abs_off,\n                self.packet_len_key,\n\
+      \                pmt.from_long(len(data)),\n            )\n\n            self.add_item_tag(\n\
+      \                0,\n                abs_off,\n                self.seq_key,\n\
+      \                pmt.from_long(seq),\n            )\n\n            self.add_item_tag(\n\
+      \                0,\n                abs_off,\n                self.cmd_key,\n\
+      \                pmt.from_long(cmd),\n            )\n\n            self.add_item_tag(\n\
+      \                0,\n                abs_off,\n                self.frame_index_key,\n\
+      \                pmt.from_long(index),\n            )\n\n            out[produced:produced\
+      \ + len(data)] = np.frombuffer(\n                data,\n                dtype=np.uint8,\n\
+      \            )\n\n            produced += len(data)\n\n            if self.debug:\n\
+      \                try:\n                    ascii_text = data.decode(\"ascii\"\
+      )\n                except Exception:\n                    ascii_text = repr(data)\n\
+      \n                print(\n                    \"[GFSK RX] index=%d seq=%03d\
+      \ cmd=0x%04X len=%d data_hex=%s data_ascii=%s\"\n                    % (\n \
+      \                       index,\n                        seq,\n             \
+      \           cmd,\n                        len(data),\n                     \
+      \   data.hex(\" \"),\n                        ascii_text,\n                \
+      \    )\n                )\n\n        return produced\n\n    ##################################################\n\
+      \    # GNU Radio work\n    ##################################################\n\
+      \n    def general_work(self, input_items, output_items):\n        inp = input_items[0]\n\
+      \        out = output_items[0]\n\n        ##################################################\n\
+      \        # GFSK Demod \u8F93\u51FA\u6BCF\u4E2A uint8 \u7684 LSB \u662F bit\n\
+      \        ##################################################\n\n        if len(inp)\
+      \ > 0:\n            self.bitbuf.extend((inp & 0x01).astype(np.uint8).tolist())\n\
+      \n        produced = 0\n\n        access_bits_len = len(self.access_bits)\n\n\
+      \        # ACCESS_CODE \u540E\u9762 4 \u5B57\u8282 LENGTH_CHECK\n        length_check_bits_len\
+      \ = 32\n\n        # ACCESS_CODE + LENGTH_CHECK\n        min_header_bits = access_bits_len\
+      \ + length_check_bits_len\n\n        # \u4E00\u4E2A\u5B8C\u6574\u7A7A\u53E3\u5E27\
+      \uFF1A\n        # ACCESS_CODE 8 \u5B57\u8282 + LENGTH_CHECK 4 \u5B57\u8282 +\
+      \ DATA_SLICE 15 \u5B57\u8282\n        air_frame_bits_len = self.AIR_FRAME_LEN\
+      \ * 8\n\n        # DATA_SLICE \u5728\u7A7A\u53E3\u5E27\u4E2D\u7684 bit \u4F4D\
+      \u7F6E\n        slice_start_bits = min_header_bits\n        slice_end_bits =\
+      \ slice_start_bits + self.SLICE_LEN * 8\n\n        ##################################################\n\
+      \        # \u6BCF\u6210\u529F\u89E3\u6790 135 \u5B57\u8282\uFF0C\u8F93\u51FA\
+      \ 90 \u5B57\u8282\n        ##################################################\n\
+      \n        while produced + self.TOTAL_DATA_LEN <= len(out):\n\n            ##################################################\n\
+      \            # \u5982\u679C\u5DF2\u7ECF\u6536\u96C6\u5230\u81F3\u5C11 135 \u5B57\
+      \u8282\u5207\u7247\u6570\u636E\uFF0C\u5219\u5C1D\u8BD5\u89E3\u6790\n       \
+      \     ##################################################\n\n            if len(self.slice_buf)\
+      \ >= self.FULL_PAYLOAD_LEN:\n                full_payload = bytes(self.slice_buf[:self.FULL_PAYLOAD_LEN])\n\
+      \n                parsed_packets = self.parse_full_payload(full_payload)\n\n\
+      \                if parsed_packets is not None:\n                    if self.debug:\n\
+      \                        print(\n                            \"[GFSK RX] full\
+      \ 135-byte payload parsed successfully\"\n                        )\n\n    \
+      \                produced = self.output_packets(\n                        parsed_packets,\n\
+      \                        out,\n                        produced,\n         \
+      \           )\n\n                    # \u4E22\u5F03\u5DF2\u7ECF\u89E3\u6790\u7684\
+      \ 135 \u5B57\u8282\n                    del self.slice_buf[:self.FULL_PAYLOAD_LEN]\n\
+      \n                    continue\n\n                else:\n                  \
+      \  ##################################################\n                    #\
+      \ \u5982\u679C\u89E3\u6790\u5931\u8D25\uFF0C\u8BF4\u660E\u5F53\u524D 135 \u5B57\
+      \u8282\u7684\u5207\u7247\u8FB9\u754C\u53EF\u80FD\u4E0D\u5BF9\uFF0C\n       \
+      \             # \u6216\u8005\u4E2D\u95F4\u6709\u8BEF\u7801/\u4E22\u5E27\u3002\
+      \n                    #\n                    # \u56E0\u4E3A\u6BCF\u4E2A\u5207\
+      \u7247\u662F 15 \u5B57\u8282\uFF0C\u6240\u4EE5\u8FD9\u91CC\u4E22\u5F03\u6700\
+      \u65E9\u7684\u4E00\u4E2A\n                    # 15 \u5B57\u8282\u5207\u7247\uFF0C\
+      \u518D\u7EE7\u7EED\u7B49\u5F85\u540E\u7EED\u5207\u7247\u91CD\u65B0\u5C1D\u8BD5\
+      \u3002\n                    ##################################################\n\
+      \n                    if self.debug:\n                        print(\n     \
+      \                       \"[GFSK RX] 135-byte payload parse failed, drop one\
+      \ 15-byte slice and resync\"\n                        )\n\n                \
+      \    del self.slice_buf[:self.SLICE_LEN]\n                    continue\n\n \
+      \           ##################################################\n           \
+      \ # slice_buf \u4E0D\u8DB3 135 \u5B57\u8282\u65F6\uFF0C\u7EE7\u7EED\u4ECE bitbuf\
+      \ \u4E2D\u63D0\u53D6\u7A7A\u53E3\u5E27\n            ##################################################\n\
+      \n            pos = self.find_access_code()\n\n            if pos < 0:\n   \
+      \             ##################################################\n         \
+      \       # \u672A\u627E\u5230 ACCESS_CODE\u3002\n                # \u4FDD\u7559\
+      \u6700\u540E access_bits_len - 1 bit\uFF0C\n                # \u9632\u6B62 ACCESS_CODE\
+      \ \u8DE8 work \u8C03\u7528\u8FB9\u754C\u3002\n                ##################################################\n\
+      \n                keep = access_bits_len - 1\n\n                if len(self.bitbuf)\
+      \ > keep:\n                    del self.bitbuf[:-keep]\n\n                break\n\
+      \n            ##################################################\n         \
+      \   # \u4E22\u5F03 ACCESS_CODE \u524D\u9762\u7684\u6742\u6563 bit\n        \
+      \    ##################################################\n\n            if pos\
+      \ > 0:\n                del self.bitbuf[:pos]\n\n            ##################################################\n\
+      \            # \u7B49\u5F85 ACCESS_CODE + LENGTH_CHECK\n            ##################################################\n\
+      \n            if len(self.bitbuf) < min_header_bits:\n                break\n\
+      \n            ##################################################\n         \
+      \   # \u68C0\u67E5 LENGTH_CHECK\n            #\n            # \u683C\u5F0F\u56FA\
+      \u5B9A\uFF1A\n            #   00 0F 00 0F\n            #\n            # \u5373\
+      \ len1 = 15, len2 = 15\n            ##################################################\n\
+      \n            length_bits = self.bitbuf[access_bits_len:min_header_bits]\n \
+      \           length_bytes = self.bits_to_bytes(length_bits)\n\n            len1\
+      \ = (length_bytes[0] << 8) | length_bytes[1]\n            len2 = (length_bytes[2]\
+      \ << 8) | length_bytes[3]\n\n            if len1 != len2 or len1 != self.SLICE_LEN:\n\
+      \                ##################################################\n      \
+      \          # \u5047\u540C\u6B65\uFF0C\u53F3\u79FB 1 bit \u7EE7\u7EED\u641C\u7D22\
+      \ ACCESS_CODE\n                ##################################################\n\
+      \n                if self.debug:\n                    print(\n             \
+      \           \"[GFSK RX] length check error: len1=%d len2=%d expected=%d\"\n\
+      \                        % (len1, len2, self.SLICE_LEN)\n                  \
+      \  )\n\n                del self.bitbuf[0]\n                continue\n\n   \
+      \         ##################################################\n            #\
+      \ \u7B49\u5F85\u5B8C\u6574 27 \u5B57\u8282\u7A7A\u53E3\u5E27\n            ##################################################\n\
+      \n            if len(self.bitbuf) < air_frame_bits_len:\n                break\n\
+      \n            ##################################################\n         \
+      \   # \u63D0\u53D6\u540E 15 \u5B57\u8282\u6709\u6548\u5207\u7247\n         \
+      \   ##################################################\n\n            slice_bits\
+      \ = self.bitbuf[slice_start_bits:slice_end_bits]\n            data_slice = self.bits_to_bytes(slice_bits)\n\
+      \n            if len(data_slice) != self.SLICE_LEN:\n                # \u7406\
+      \u8BBA\u4E0A\u4E0D\u4F1A\u53D1\u751F\n                del self.bitbuf[0]\n \
+      \               continue\n\n            ##################################################\n\
+      \            # \u5C06 15 \u5B57\u8282\u5207\u7247\u8FFD\u52A0\u5230\u62FC\u63A5\
+      \u7F13\u5B58\n            ##################################################\n\
+      \n            self.slice_buf.extend(data_slice)\n\n            if self.debug:\n\
+      \                print(\n                    \"[GFSK RX] got one 15-byte slice,\
+      \ collected=%d/%d bytes, slice_hex=%s\"\n                    % (\n         \
+      \               len(self.slice_buf),\n                        self.FULL_PAYLOAD_LEN,\n\
+      \                        data_slice.hex(\" \"),\n                    )\n   \
+      \             )\n\n            ##################################################\n\
+      \            # \u4E22\u5F03\u5DF2\u7ECF\u5904\u7406\u7684\u5B8C\u6574\u7A7A\u53E3\
+      \u5E27\n            ##################################################\n\n \
+      \           del self.bitbuf[:air_frame_bits_len]\n\n        ##################################################\n\
+      \        # \u6D88\u8D39\u672C\u6B21\u8F93\u5165\n        ##################################################\n\
+      \n        self.consume(0, len(inp))\n        return produced\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    debug: 'True'
+    max_access_errors: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: "('GFSK 15-Byte Slice Packet Decoder', 'gfsk_key_decoder', [('max_access_errors',\
+      \ '0'), ('debug', 'True')], [('0', 'byte', 1)], [('0', 'byte', 1)], '\\n   \
+      \ \u8F93\u5165\uFF1A\\n        GFSK Demod \u8F93\u51FA\u7684 unpacked bit stream\uFF0C\
+      \u6BCF\u4E2A uint8 \u53EA\u4F7F\u7528 LSB\uFF0C\u503C\u4E3A 0 \u6216 1\u3002\
+      \\n\\n    \u7A7A\u53E3\u5E27\u683C\u5F0F\u56FA\u5B9A\u4E3A 27 \u5B57\u8282\uFF1A\
+      \\n\\n        ACCESS_CODE      8 bytes\\n        LENGTH_CHECK     4 bytes\uFF0C\
+      \u56FA\u5B9A 00 0F 00 0F\\n        DATA_SLICE       15 bytes\\n\\n    \u6BCF\
+      \u4E2A\u7A7A\u53E3\u5E27\u53EA\u6709\u6700\u540E 15 \u5B57\u8282\u662F\u6709\
+      \u6548\u6570\u636E\u5207\u7247\u3002\\n\\n    \u4E00\u6574\u5957\u6709\u6548\
+      \u6570\u636E\u4E3A 135 \u5B57\u8282\uFF1A\\n\\n        135 / 15 = 9\\n\\n  \
+      \  \u6240\u4EE5\u63A5\u6536\u7AEF\u9700\u8981\u8FDE\u7EED\u63A5\u6536 9 \u4E2A\
+      \u7A7A\u53E3\u5E27\uFF0C\u63D0\u53D6\u5176\u4E2D\u7684 15 \u5B57\u8282 DATA_SLICE\uFF0C\
+      \\n    \u62FC\u63A5\u6210 135 \u5B57\u8282\u5B8C\u6574\u6570\u636E\uFF0C\u7136\
+      \u540E\u518D\u89E3\u6790\u5185\u90E8\u7684\u4E94\u4E2A\u5B50\u5305\u3002\\n\\\
+      n    135 \u5B57\u8282\u5185\u90E8\u5305\u542B\u4E94\u4E2A\u5B50\u6570\u636E\u5305\
+      \uFF1A\\n\\n        CMD_ID 0x0A01, DATA \u957F\u5EA6 24\\n        CMD_ID 0x0A02,\
+      \ DATA \u957F\u5EA6 12\\n        CMD_ID 0x0A03, DATA \u957F\u5EA6 10\\n    \
+      \    CMD_ID 0x0A04, DATA \u957F\u5EA6 8\\n        CMD_ID 0x0A05, DATA \u957F\
+      \u5EA6 36\\n\\n    \u6BCF\u4E2A\u5B50\u6570\u636E\u5305\u683C\u5F0F\uFF1A\\\
+      n\\n        SOF             1 byte\\n        DATALENGTH      2 bytes\\n    \
+      \    SEQ             1 byte\\n        CRC8            1 byte\\n        CMD_ID\
+      \          2 bytes\\n        DATA            N bytes\\n        CRC16       \
+      \    2 bytes\\n\\n    \u8F93\u51FA\uFF1A\\n        \u5C06\u4E94\u4E2A\u5B50\u5305\
+      \u7684 DATA \u6309\u987A\u5E8F\u8F93\u51FA\uFF1A\\n\\n            DATA_0A01\
+      \ + DATA_0A02 + DATA_0A03 + DATA_0A04 + DATA_0A05\\n\\n        \u603B\u8F93\u51FA\
+      \u957F\u5EA6\uFF1A\\n\\n            24 + 12 + 10 + 8 + 36 = 90 bytes\\n    ',\
+      \ ['debug', 'max_access_errors'])"
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1664, 332.0]
+    rotation: 0
+    state: true
+- name: iio_pluto_sink_0
+  id: iio_pluto_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    attenuation1: '0'
+    bandwidth: '940000'
+    buffer_size: '32768'
+    comment: ''
+    cyclic: 'False'
+    filter: ''
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: '432200000'
+    fstop: '0'
+    len_tag_key: ''
+    samplerate: samp_rate
+    type: fc32
+    uri: ip:192.168.2.1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 444.0]
+    rotation: 0
+    state: true
+- name: iio_pluto_source_0
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: '940000'
+    bbdc: 'True'
+    buffer_size: '32768'
+    comment: ''
+    filter: ''
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: '432200000'
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: packet_len
+    manual_gain1: '40'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: samp_rate
+    type: fc32
+    uri: ip:192.168.2.1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 396.0]
+    rotation: 0
+    state: true
+- name: qtgui_time_sink_x_0_0_1_0_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"raw"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 220.0]
+    rotation: 0
+    state: disabled
+- name: qtgui_time_sink_x_0_0_1_0_0_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"gfsk_raw"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 348.0]
+    rotation: 0
+    state: true
+- name: qtgui_time_sink_x_0_0_1_0_0_1
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"raw2"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2144, 316.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_0_0_1_0_0_1_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"rec_raw"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1392, 508.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [blocks_multiply_const_vxx_0, '0', iio_pluto_sink_0, '0']
+- [blocks_throttle_0, '0', digital_gfsk_demod_0_0, '0']
+- [blocks_uchar_to_float_1, '0', qtgui_time_sink_x_0_0_1_0_0, '0']
+- [blocks_uchar_to_float_1_0, '0', qtgui_time_sink_x_0_0_1_0_0_1, '0']
+- [blocks_unpack_k_bits_bb_0, '0', digital_gfsk_mod_0_0, '0']
+- [digital_gfsk_demod_0_0, '0', epy_block_1, '0']
+- [digital_gfsk_mod_0_0, '0', blocks_multiply_const_vxx_0, '0']
+- [digital_gfsk_mod_0_0, '0', blocks_throttle_0, '0']
+- [digital_gfsk_mod_0_0, '0', qtgui_time_sink_x_0_0_1_0_0_0, '0']
+- [epy_block_0, '0', blocks_uchar_to_float_1, '0']
+- [epy_block_0, '0', blocks_unpack_k_bits_bb_0, '0']
+- [epy_block_1, '0', blocks_uchar_to_float_1_0, '0']
+- [iio_pluto_source_0, '0', digital_gfsk_demod_0_0, '0']
+- [iio_pluto_source_0, '0', qtgui_time_sink_x_0_0_1_0_0_1_0, '0']
+
+metadata:
+  file_format: 1
