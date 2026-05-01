@@ -1,0 +1,838 @@
+options:
+  parameters:
+    author: qsq
+    catch_exceptions: 'True'
+    category: '[GRC Hier Blocks]'
+    cmake_opt: ''
+    comment: ''
+    copyright: ''
+    description: ''
+    gen_cmake: 'On'
+    gen_linking: dynamic
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: Interface_Wave_Generator
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: Interface Wave Generator
+    window_size: (1000,1000)
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [8, 12.0]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: samp_rate
+  id: variable
+  parameters:
+    comment: ''
+    value: '1080000'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [184, 12]
+    rotation: 0
+    state: enabled
+- name: blocks_multiply_const_vxx_0
+  id: blocks_multiply_const_vxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    const: '0.3'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [752, 500.0]
+    rotation: 0
+    state: true
+- name: blocks_throttle_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: '432000'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 276.0]
+    rotation: 0
+    state: disabled
+- name: blocks_uchar_to_float_1
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [280, 248.0]
+    rotation: 0
+    state: disabled
+- name: blocks_uchar_to_float_1_0
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1864, 352.0]
+    rotation: 0
+    state: enabled
+- name: blocks_unpack_k_bits_bb_0
+  id: blocks_unpack_k_bits_bb
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    k: '8'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [328, 372.0]
+    rotation: 0
+    state: true
+- name: digital_gfsk_demod_0_0
+  id: digital_gfsk_demod
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    freq_error: '0.0'
+    gain_mu: '0.05'
+    log: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    mu: '0.5'
+    omega_relative_limit: '0.02'
+    samples_per_symbol: '100'
+    sensitivity: '2.4'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1392, 300.0]
+    rotation: 0
+    state: enabled
+- name: digital_gfsk_mod_0_0
+  id: digital_gfsk_mod
+  parameters:
+    affinity: ''
+    alias: ''
+    bt: '0.35'
+    comment: ''
+    do_unpack: 'False'
+    log: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_symbol: '100'
+    sensitivity: '2.4'
+    verbose: 'False'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [544, 340.0]
+    rotation: 0
+    state: enabled
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "#!/usr/bin/env python3\nimport numpy as np\nfrom gnuradio import\
+      \ gr\nimport random\nimport string\n\n\n# \u5E72\u6270\u6CE2\u6570\u636E\u751F\
+      \u6210\u5757 (\u5BC6\u94A5+\u968F\u673A\u586B\u5145)\nclass gfsk_data_source(gr.sync_block):\n\
+      \    def __init__(self):\n        gr.sync_block.__init__(self, name=\"GFSK Data\
+      \ Source\", in_sig=None, out_sig=[np.uint8])\n        \n        # \u5E27\u7ED3\
+      \u6784\u53C2\u6570\n        self.ACCESS_CODE = bytes([0x16, 0xE8, 0xD3, 0x77,\
+      \ 0x15, 0x1C, 0x71, 0x2D])\n        self.LENGTH_CHECK = bytes([0x00, 0x0F, 0x00,\
+      \ 0x0F])\n        self.SOF = 0xA5\n        self.CMD_ID = bytes([0x0A, 0x06])\n\
+      \        self.DATALENGTH = 6\n        self.TARGET_BYTES_PER_SEC = 1350     \
+      \                                                                 # \u5E72\u6270\
+      \u8F93\u51FA:1350 Bytes/s\n        self.PACKET_FREQ_HZ = 10                \
+      \                                                              # \u6570\u636E\
+      \u5305\u4F53\u63A8\u9001\u901F\u7387: 10Hz\n        self.CYCLE_TIME = 1.0 /\
+      \ self.PACKET_FREQ_HZ\n        self.BYTES_PER_CYCLE = self.TARGET_BYTES_PER_SEC\
+      \ // self.PACKET_FREQ_HZ\n        \n        # \u8BA1\u7B97\u5E27\u957F\u5EA6\
+      \n        self.data_frame_len = 5 + len(self.CMD_ID) + self.DATALENGTH + 2 \
+      \                                     # \u6570\u636E\u5E27 5 + 6 + 2 + 2 = 15\n\
+      \        self.air_frame_len = len(self.ACCESS_CODE) + len(self.LENGTH_CHECK)\
+      \ + self.data_frame_len             # \u7A7A\u53E3\u5E27 8 + 4 + 15 = 27\n \
+      \       self.pad_len = self.BYTES_PER_CYCLE - self.air_frame_len           \
+      \                                   # \u586B\u5145\u957F\u5EA6 135 - 27 = 108\n\
+      \        self.seq = 0                                                      \
+      \                                    # \u5305\u5E8F\u53F7 0-255\u5FAA\u73AF\n\
+      \n        self._packet_buffer = bytearray()\n        print(f\"Packet length\
+      \ (bytes): {self.air_frame_len + self.pad_len}\")\n\n    def crc8_atm(self,\
+      \ data: bytes) -> int:\n        poly = 0x07\n        crc = 0x00\n        for\
+      \ byte in data:\n            crc ^= byte\n            for _ in range(8):\n \
+      \               if crc & 0x80:\n                    crc = ((crc << 1) ^ poly)\
+      \ & 0xFF\n                else:\n                    crc = (crc << 1) & 0xFF\n\
+      \        return crc\n\n    def crc16_ccitt(self, data: bytes) -> int:\n    \
+      \    poly = 0x1021\n        crc = 0xFFFF\n        for byte in data:\n      \
+      \      crc ^= (byte << 8)\n            for _ in range(8):\n                if\
+      \ crc & 0x8000:\n                    crc = ((crc << 1) ^ poly) & 0xFFFF\n  \
+      \              else:\n                    crc = (crc << 1) & 0xFFFF\n      \
+      \  return crc\n\n    def generate_ascii_bytes(self, length: int) -> bytes:\n\
+      \        chars = string.printable[:95]\n        return ''.join(random.choices(chars,\
+      \ k=length)).encode('ascii')\n\n    def build_structured_frame(self, seq: int)\
+      \ -> bytes:\n        data = b\"rmnb66\"\n        datalength_bytes = bytes([(self.DATALENGTH\
+      \ >> 8) & 0xFF, self.DATALENGTH & 0xFF])\n        header_prefix = bytes([self.SOF])\
+      \ + datalength_bytes + bytes([seq])\n        crc8 = self.crc8_atm(header_prefix)\n\
+      \        frame_header = header_prefix + bytes([crc8])\n        crc_input = frame_header\
+      \ + self.CMD_ID + data\n        crc16_val = self.crc16_ccitt(crc_input)\n  \
+      \      crc16_bytes = bytes([(crc16_val >> 8) & 0xFF, crc16_val & 0xFF])\n  \
+      \      return crc_input + crc16_bytes\n\n    def next_packet(self):  #\u751F\
+      \u6210\u5B8C\u6574\u6570\u636E\u5305\n        structured = self.build_structured_frame(self.seq)\n\
+      \        packet = self.ACCESS_CODE + self.LENGTH_CHECK + structured\n      \
+      \  padding = self.generate_ascii_bytes(self.pad_len) if self.pad_len > 0 else\
+      \ b''\n        self.seq = (self.seq + 1) % 256\n        return packet + padding\n\
+      \n    def work(self, input_items, output_items):\n        out = output_items[0]\n\
+      \        max_output = len(out)\n        bytes_written = 0\n\n        # \u7F13\
+      \u5B58\u4E3A\u7A7A\u65F6\uFF0C\u751F\u6210\u65B0\u6570\u636E\u5305\n       \
+      \ if len(self._packet_buffer) == 0:\n            self._packet_buffer = bytearray(self.next_packet())\n\
+      \n        send_len = min(len(self._packet_buffer), max_output)\n        if send_len\
+      \ > 0:\n            # \u590D\u5236\u7F13\u5B58\u6570\u636E\u5230\u8F93\u51FA\
+      \n            out[:send_len] = np.frombuffer(self._packet_buffer[:send_len],\
+      \ dtype=np.uint8)\n            # \u79FB\u9664\u5DF2\u53D1\u9001\u7684\u6570\u636E\
+      \n            del self._packet_buffer[:send_len]\n            bytes_written\
+      \ = send_len\n\n        return bytes_written\n\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: ('GFSK Data Source', 'gfsk_data_source', [], [], [('0', 'byte', 1)],
+      '', [])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [40, 304.0]
+    rotation: 0
+    state: true
+- name: epy_block_1
+  id: epy_block
+  parameters:
+    _source_code: "#!/usr/bin/env python3\nimport numpy as np\nfrom gnuradio import\
+      \ gr\nimport pmt\n\n\nclass gfsk_key_decoder(gr.basic_block):\n    \"\"\"\n\
+      \    \u8F93\u5165\uFF1AGFSK Demod \u8F93\u51FA\u7684 unpacked bit stream\uFF0C\
+      \u6BCF\u4E2A uint8 \u53EA\u4F7F\u7528 LSB\uFF0C\u503C\u4E3A 0 \u6216 1\u3002\
+      \n    \u8F93\u51FA\uFF1A\u6BCF\u5E27\u89E3\u51FA\u7684 6 \u5B57\u8282\u5BC6\u94A5\
+      \u6570\u636E\uFF0C\u4F8B\u5982 b\"123456\"\u3002\n    \"\"\"\n\n    def __init__(self,\
+      \ max_access_errors=0, debug=True):\n        gr.basic_block.__init__(\n    \
+      \        self,\n            name=\"GFSK Key Decoder\",\n            in_sig=[np.uint8],\n\
+      \            out_sig=[np.uint8],\n        )\n\n        self.ACCESS_CODE = bytes([0x16,\
+      \ 0xE8, 0xD3, 0x77, 0x15, 0x1C, 0x71, 0x2D])\n        self.EXPECTED_LEN = 15\n\
+      \        self.SOF = 0xA5\n        self.CMD_ID = bytes([0x0A, 0x06])\n      \
+      \  self.KEY_LEN = 6\n\n        self.max_access_errors = int(max_access_errors)\n\
+      \        self.debug = bool(debug)\n\n        self.access_bits = self.bytes_to_bits(self.ACCESS_CODE)\n\
+      \        self.bitbuf = bytearray()\n\n        self.packet_len_key = pmt.intern(\"\
+      packet_len\")\n        self.seq_key = pmt.intern(\"seq\")\n\n    def bytes_to_bits(self,\
+      \ data: bytes):\n        bits = []\n        for b in data:\n            for\
+      \ i in range(7, -1, -1):\n                bits.append((b >> i) & 1)\n      \
+      \  return bits\n\n    def bits_to_bytes(self, bits):\n        n = len(bits)\
+      \ // 8\n        out = bytearray(n)\n        for i in range(n):\n           \
+      \ v = 0\n            for b in bits[i * 8:(i + 1) * 8]:\n                v =\
+      \ (v << 1) | (b & 1)\n            out[i] = v\n        return bytes(out)\n\n\
+      \    def crc8_atm(self, data: bytes) -> int:\n        poly = 0x07\n        crc\
+      \ = 0x00\n        for byte in data:\n            crc ^= byte\n            for\
+      \ _ in range(8):\n                if crc & 0x80:\n                    crc =\
+      \ ((crc << 1) ^ poly) & 0xFF\n                else:\n                    crc\
+      \ = (crc << 1) & 0xFF\n        return crc\n\n    def crc16_ccitt(self, data:\
+      \ bytes) -> int:\n        poly = 0x1021\n        crc = 0xFFFF\n        for byte\
+      \ in data:\n            crc ^= (byte << 8)\n            for _ in range(8):\n\
+      \                if crc & 0x8000:\n                    crc = ((crc << 1) ^ poly)\
+      \ & 0xFFFF\n                else:\n                    crc = (crc << 1) & 0xFFFF\n\
+      \        return crc\n\n    def find_access_code(self):\n        \"\"\"\n   \
+      \     \u5728 bitbuf \u4E2D\u641C\u7D22 access code\u3002\n        \u8FD4\u56DE\
+      \u5339\u914D\u8D77\u70B9\uFF1B\u627E\u4E0D\u5230\u8FD4\u56DE -1\u3002\n    \
+      \    \"\"\"\n        n = len(self.access_bits)\n        limit = len(self.bitbuf)\
+      \ - n + 1\n        if limit <= 0:\n            return -1\n\n        access =\
+      \ self.access_bits\n        max_err = self.max_access_errors\n\n        for\
+      \ i in range(limit):\n            err = 0\n            for j in range(n):\n\
+      \                if self.bitbuf[i + j] != access[j]:\n                    err\
+      \ += 1\n                    if err > max_err:\n                        break\n\
+      \            if err <= max_err:\n                return i\n\n        return\
+      \ -1\n\n    def parse_payload(self, payload: bytes):\n        \"\"\"\n     \
+      \   payload \u662F access code + 4\u5B57\u8282 LENGTH_CHECK \u4E4B\u540E\u7684\
+      \ 15 \u5B57\u8282\u7ED3\u6784\u5E27\uFF1A\n\n        SOF             1 byte\n\
+      \        DATALENGTH      2 bytes\n        SEQ             1 byte\n        CRC8\
+      \            1 byte\n        CMD_ID          2 bytes\n        DATA         \
+      \   6 bytes\n        CRC16           2 bytes\n        \"\"\"\n        if len(payload)\
+      \ != self.EXPECTED_LEN:\n            return None\n\n        if payload[0] !=\
+      \ self.SOF:\n            return None\n\n        data_len = (payload[1] << 8)\
+      \ | payload[2]\n        seq = payload[3]\n        rx_crc8 = payload[4]\n\n \
+      \       header_prefix = payload[0:4]\n        calc_crc8 = self.crc8_atm(header_prefix)\n\
+      \        if rx_crc8 != calc_crc8:\n            return None\n\n        cmd =\
+      \ payload[5:7]\n        if cmd != self.CMD_ID:\n            return None\n\n\
+      \        if data_len != self.KEY_LEN:\n            return None\n\n        data_start\
+      \ = 7\n        data_end = data_start + data_len\n        key_data = payload[data_start:data_end]\n\
+      \n        rx_crc16 = (payload[-2] << 8) | payload[-1]\n        calc_crc16 =\
+      \ self.crc16_ccitt(payload[:-2])\n        if rx_crc16 != calc_crc16:\n     \
+      \       return None\n\n        return seq, key_data\n\n    def general_work(self,\
+      \ input_items, output_items):\n        inp = input_items[0]\n        out = output_items[0]\n\
+      \n        # GFSK Demod \u8F93\u51FA\u6BCF\u4E2A uint8 \u7684 LSB \u662F bit\u3002\
+      \n        if len(inp) > 0:\n            self.bitbuf.extend((inp & 0x01).astype(np.uint8).tolist())\n\
+      \n        produced = 0\n\n        access_bits_len = len(self.access_bits)\n\
+      \        header_bits_len = 32\n        min_header_bits = access_bits_len + header_bits_len\n\
+      \n        while produced + self.KEY_LEN <= len(out):\n            pos = self.find_access_code()\n\
+      \n            if pos < 0:\n                # \u4FDD\u7559\u6700\u540E 63 bit\uFF0C\
+      \u9632\u6B62 access code \u8DE8 work \u8C03\u7528\u8FB9\u754C\u3002\n      \
+      \          keep = access_bits_len - 1\n                if len(self.bitbuf) >\
+      \ keep:\n                    del self.bitbuf[:-keep]\n                break\n\
+      \n            # \u4E22\u5F03 access code \u524D\u9762\u7684\u6742\u6563 bit\u3002\
+      \n            if pos > 0:\n                del self.bitbuf[:pos]\n\n       \
+      \     # \u7B49\u5F85 access code + 32 bit \u957F\u5EA6\u5934\u3002\n       \
+      \     if len(self.bitbuf) < min_header_bits:\n                break\n\n    \
+      \        header_bits = self.bitbuf[access_bits_len:min_header_bits]\n      \
+      \      header = self.bits_to_bytes(header_bits)\n\n            # header \u683C\
+      \u5F0F\uFF1A00 0F 00 0F\uFF0C\u5373 16-bit length \u91CD\u590D\u4E24\u6B21\u3002\
+      \n            len1 = (header[0] << 8) | header[1]\n            len2 = (header[2]\
+      \ << 8) | header[3]\n\n            if len1 != len2 or len1 <= 0 or len1 > 512:\n\
+      \                # \u5047\u540C\u6B65\uFF0C\u53F3\u79FB 1 bit \u7EE7\u7EED\u641C\
+      \u7D22\u3002\n                del self.bitbuf[0]\n                continue\n\
+      \n            payload_len_bytes = len1\n            total_bits = access_bits_len\
+      \ + header_bits_len + payload_len_bytes * 8\n\n            if len(self.bitbuf)\
+      \ < total_bits:\n                break\n\n            payload_bits = self.bitbuf[min_header_bits:total_bits]\n\
+      \            payload = self.bits_to_bytes(payload_bits)\n\n            parsed\
+      \ = self.parse_payload(payload)\n\n            if parsed is not None:\n    \
+      \            seq, key_data = parsed\n\n                abs_off = self.nitems_written(0)\
+      \ + produced\n                self.add_item_tag(\n                    0,\n \
+      \                   abs_off,\n                    self.packet_len_key,\n   \
+      \                 pmt.from_long(len(key_data)),\n                )\n       \
+      \         self.add_item_tag(\n                    0,\n                    abs_off,\n\
+      \                    self.seq_key,\n                    pmt.from_long(seq),\n\
+      \                )\n\n                out[produced:produced + len(key_data)]\
+      \ = np.frombuffer(\n                    key_data, dtype=np.uint8\n         \
+      \       )\n                produced += len(key_data)\n\n                if self.debug:\n\
+      \                    try:\n                        ascii_text = key_data.decode(\"\
+      ascii\")\n                    except Exception:\n                        ascii_text\
+      \ = repr(key_data)\n                    print(\n                        \"[GFSK\
+      \ RX] seq=%03d key_hex=%s key_ascii=%s\"\n                        % (seq, key_data.hex(\"\
+      \ \"), ascii_text)\n                    )\n\n                # \u4E22\u5F03\u6574\
+      \u4E2A\u5DF2\u89E3\u6790\u5E27\u3002\n                del self.bitbuf[:total_bits]\n\
+      \            else:\n                # CRC/SOF/CMD \u9519\u8BEF\uFF0C\u8BF4\u660E\
+      \u662F\u5047\u540C\u6B65\u6216 bit \u9519\u8BEF\uFF0C\u53F3\u79FB 1 bit \u91CD\
+      \u641C\u3002\n                del self.bitbuf[0]\n\n        self.consume(0,\
+      \ len(inp))\n        return produced"
+    affinity: ''
+    alias: ''
+    comment: ''
+    debug: 'True'
+    max_access_errors: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    _io_cache: "('GFSK Key Decoder', 'gfsk_key_decoder', [('max_access_errors', '0'),\
+      \ ('debug', 'True')], [('0', 'byte', 1)], [('0', 'byte', 1)], '\\n    \u8F93\
+      \u5165\uFF1AGFSK Demod \u8F93\u51FA\u7684 unpacked bit stream\uFF0C\u6BCF\u4E2A\
+      \ uint8 \u53EA\u4F7F\u7528 LSB\uFF0C\u503C\u4E3A 0 \u6216 1\u3002\\n    \u8F93\
+      \u51FA\uFF1A\u6BCF\u5E27\u89E3\u51FA\u7684 6 \u5B57\u8282\u5BC6\u94A5\u6570\u636E\
+      \uFF0C\u4F8B\u5982 b\"123456\"\u3002\\n    ', ['debug', 'max_access_errors'])"
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1648, 340.0]
+    rotation: 0
+    state: true
+- name: iio_pluto_sink_0
+  id: iio_pluto_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    attenuation1: '0'
+    bandwidth: '940000'
+    buffer_size: '32768'
+    comment: ''
+    cyclic: 'False'
+    filter: ''
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: '432200000'
+    fstop: '0'
+    len_tag_key: ''
+    samplerate: samp_rate
+    type: fc32
+    uri: ip:192.168.2.1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 444.0]
+    rotation: 0
+    state: true
+- name: iio_pluto_source_0
+  id: iio_pluto_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bandwidth: '940000'
+    bbdc: 'True'
+    buffer_size: '32768'
+    comment: ''
+    filter: ''
+    filter_source: '''Auto'''
+    fpass: '0'
+    frequency: '432200000'
+    fstop: '0'
+    gain1: '''manual'''
+    len_tag_key: packet_len
+    manual_gain1: '40'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    quadrature: 'True'
+    rfdc: 'True'
+    samplerate: samp_rate
+    type: fc32
+    uri: ip:192.168.2.1
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1120, 396.0]
+    rotation: 0
+    state: true
+- name: qtgui_time_sink_x_0_0_1_0_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"raw"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [480, 220.0]
+    rotation: 0
+    state: disabled
+- name: qtgui_time_sink_x_0_0_1_0_0_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'True'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"gfsk_raw"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [912, 348.0]
+    rotation: 0
+    state: true
+- name: qtgui_time_sink_x_0_0_1_0_0_1
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"raw2"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: float
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2064, 324.0]
+    rotation: 0
+    state: enabled
+- name: qtgui_time_sink_x_0_0_1_0_0_1_0
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    axislabels: 'True'
+    color1: blue
+    color10: dark blue
+    color2: red
+    color3: green
+    color4: black
+    color5: cyan
+    color6: magenta
+    color7: yellow
+    color8: dark red
+    color9: dark green
+    comment: ''
+    ctrlpanel: 'False'
+    entags: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label1: Signal 1
+    label10: Signal 10
+    label2: Signal 2
+    label3: Signal 3
+    label4: Signal 4
+    label5: Signal 5
+    label6: Signal 6
+    label7: Signal 7
+    label8: Signal 8
+    label9: Signal 9
+    legend: 'True'
+    marker1: '-1'
+    marker10: '-1'
+    marker2: '-1'
+    marker3: '-1'
+    marker4: '-1'
+    marker5: '-1'
+    marker6: '-1'
+    marker7: '-1'
+    marker8: '-1'
+    marker9: '-1'
+    name: '"rec_raw"'
+    nconnections: '1'
+    size: '1024'
+    srate: samp_rate
+    stemplot: 'False'
+    style1: '1'
+    style10: '1'
+    style2: '1'
+    style3: '1'
+    style4: '1'
+    style5: '1'
+    style6: '1'
+    style7: '1'
+    style8: '1'
+    style9: '1'
+    tr_chan: '0'
+    tr_delay: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_slope: qtgui.TRIG_SLOPE_POS
+    tr_tag: '""'
+    type: complex
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: '""'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1392, 508.0]
+    rotation: 0
+    state: enabled
+
+connections:
+- [blocks_multiply_const_vxx_0, '0', iio_pluto_sink_0, '0']
+- [blocks_throttle_0, '0', digital_gfsk_demod_0_0, '0']
+- [blocks_uchar_to_float_1, '0', qtgui_time_sink_x_0_0_1_0_0, '0']
+- [blocks_uchar_to_float_1_0, '0', qtgui_time_sink_x_0_0_1_0_0_1, '0']
+- [blocks_unpack_k_bits_bb_0, '0', digital_gfsk_mod_0_0, '0']
+- [digital_gfsk_demod_0_0, '0', epy_block_1, '0']
+- [digital_gfsk_mod_0_0, '0', blocks_multiply_const_vxx_0, '0']
+- [digital_gfsk_mod_0_0, '0', blocks_throttle_0, '0']
+- [digital_gfsk_mod_0_0, '0', qtgui_time_sink_x_0_0_1_0_0_0, '0']
+- [epy_block_0, '0', blocks_uchar_to_float_1, '0']
+- [epy_block_0, '0', blocks_unpack_k_bits_bb_0, '0']
+- [epy_block_1, '0', blocks_uchar_to_float_1_0, '0']
+- [iio_pluto_source_0, '0', digital_gfsk_demod_0_0, '0']
+- [iio_pluto_source_0, '0', qtgui_time_sink_x_0_0_1_0_0_1_0, '0']
+
+metadata:
+  file_format: 1
