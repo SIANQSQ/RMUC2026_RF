@@ -37,7 +37,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '1080000'
+    value: '1000000'
   states:
     bus_sink: false
     bus_source: false
@@ -141,8 +141,8 @@ blocks:
     minoutbuf: '0'
     mu: '0.5'
     omega_relative_limit: '0.02'
-    samples_per_symbol: '100'
-    sensitivity: '2.4'
+    samples_per_symbol: '52'
+    sensitivity: '2.8323'
     verbose: 'False'
   states:
     bus_sink: false
@@ -162,8 +162,8 @@ blocks:
     log: 'True'
     maxoutbuf: '0'
     minoutbuf: '0'
-    samples_per_symbol: '100'
-    sensitivity: '2.4'
+    samples_per_symbol: '52'
+    sensitivity: '2.8323'
     verbose: 'False'
   states:
     bus_sink: false

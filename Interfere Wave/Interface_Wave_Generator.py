@@ -78,7 +78,7 @@ class Interface_Wave_Generator(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 1080000
+        self.samp_rate = samp_rate = 1000000
 
         ##################################################
         # Blocks
@@ -253,15 +253,15 @@ class Interface_Wave_Generator(gr.top_block, Qt.QWidget):
         self.epy_block_1 = epy_block_1.gfsk_key_decoder(max_access_errors=0, debug=True)
         self.epy_block_0 = epy_block_0.gfsk_data_source()
         self.digital_gfsk_mod_0_0 = digital.gfsk_mod(
-            samples_per_symbol=100,
-            sensitivity=2.4,
+            samples_per_symbol=52,
+            sensitivity=2.8323,
             bt=0.35,
             verbose=False,
             log=True,
             do_unpack=False)
         self.digital_gfsk_demod_0_0 = digital.gfsk_demod(
-            samples_per_symbol=100,
-            sensitivity=2.4,
+            samples_per_symbol=52,
+            sensitivity=2.8323,
             gain_mu=0.05,
             mu=0.5,
             omega_relative_limit=0.02,
